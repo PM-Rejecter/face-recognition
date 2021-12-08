@@ -33,4 +33,4 @@ class FaceDetector:
             if cv2.waitKey(30) & 0xff == 27:
                 break
 
-            cv2.destroyWindow('face check')
+        cv2.destroyWindow('face check')
