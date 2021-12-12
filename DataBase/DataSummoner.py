@@ -5,6 +5,9 @@ from firebase_admin import firestore
 from PIL import Image
 from io import BytesIO
 from typing import Dict
+from pathlib import Path
+import uuid
+import os
 class DataSummoner:
     def __init__(self,cred_path:str):
         # path/to/serviceAccoun t.json 請用自己存放的路徑
@@ -14,7 +17,7 @@ class DataSummoner:
         # 初始化firestore
         self.image_set = 'face_images'
         self.db = firestore.client()
-        self.columns_dict = {'face_images':['data','id','gender','year']}
+        self.columns_dict = {'face_images':['data','name']}
 
     def base64_to_image(self,base64_str):
         try:
@@ -29,11 +32,15 @@ class DataSummoner:
             return encoded_string
         except Exception as e:
             print(e)
-    def save_data(self,data:Dict):
+    def save_data(self,data:Dict,id:str=None):
         try:
             photo_ref = self.db.collection(self.image_set)
             if sorted(list(data.keys())) == sorted(self.columns_dict[self.image_set]):
-                photo_ref.add(data)
+                if id:
+                    photo_ref.document(id).set(data)
+                else:
+                    photo_ref.add(data)
+
             else:
                 print('save fail')
                 print('[ERROR]->columns is not match')
@@ -73,11 +80,22 @@ class DataSummoner:
         doc_ref = self.db.collection(self.image_set).document(document)
         doc_ref.update({update_data})
 
-    def download_all_images(self):
-        pass
+    def download_all_images(self,output_path):
+        try:
+            out_path = Path(output_path)
+            docs = self.db.collection(self.image_set).stream()
+            out_path.mkdir(parents=True, exist_ok=True)
+            for doc in docs:
+                res = doc.to_dict()
+                sub_path = out_path/res['name']
+                sub_path.mkdir(parents=True, exist_ok=True)
+                for data in res['data']:
+                    image = self.base64_to_image(data)
+                    image.save(str(sub_path/(str(uuid.uuid4())+'.jpg')))
+        except Exception as e:
+            print(e)
 
 if __name__=='__main__':
     ds = DataSummoner("exodia-face-recognition-firebase-adminsdk-1xywr-4f1f07fee9.json")
-    res = ds.fetch_some_data('id','==',3)
 
-    pass
+    ds.download_all_images('./test_out')
