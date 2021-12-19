@@ -33,8 +33,8 @@ class FaceLandmarks:
             right = x2
             top = y1
             bottom = y2
-            dlibRect = dlib.rectangle(left, top, right, bottom)
-            points = self.predictor(img, dlibRect).parts()
+            dlib_rect = dlib.rectangle(left, top, right, bottom)
+            points = self.predictor(img, dlib_rect).parts()
             landmarks.append(points)
         return landmarks
 
@@ -79,10 +79,3 @@ class FaceLandmarks:
                 cv2.circle(img, (x, y), 3, (50, 50, 255), cv2.FILLED)
         cv2.imshow('image', img)
         cv2.waitKey(0)
-
-basketball = cv2.imread(r'C:\Users\User\Desktop\try.jpeg')
-temp1 = FaceLandmarks()._get_bounding_box(basketball)
-temp2 = FaceLandmarks()._get_facial_landmarks(basketball)
-temp3 = FaceLandmarks()._get_alignment_points(basketball)
-FaceLandmarks().plotting_face_alignment_points(basketball)
-FaceLandmarks().plotting(basketball)
