@@ -17,7 +17,7 @@ class DataSummoner:
         # 初始化firestore
         self.image_set = 'face_images'
         self.db = firestore.client()
-        self.columns_dict = {'face_images':['data','name']}
+        self.columns_dict = {'face_images':['data','name','gender']}
 
     def base64_to_image(self,base64_str):
         try:
@@ -95,7 +95,3 @@ class DataSummoner:
         except Exception as e:
             print(e)
 
-if __name__=='__main__':
-    ds = DataSummoner("exodia-face-recognition-firebase-adminsdk-1xywr-4f1f07fee9.json")
-
-    ds.download_all_images('./test_out')
