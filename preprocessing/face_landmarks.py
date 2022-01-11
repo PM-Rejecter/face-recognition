@@ -1,4 +1,5 @@
 import cv2
+from typing import List
 from pathlib import Path
 import dlib
 import numpy as np
@@ -17,7 +18,9 @@ class FaceLandmarks:
         self.bbox_detector = bbox_detector
         self.landmarks_model = landmarks_model
 
-    def bounding_box(self, img) -> np.array:
+    def bounding_box(self, img, nth_biggest_face:int=1) -> np.array:
+        # nth_biggest_face=1 represents the biggest bounding box, and 2 represents the second one and so on...
+
         if self.bbox_detector == DetectorType.Cascade:
             model_path = Path('../models/haarcascade_frontalface_default.xml').resolve()
             detector = cv2.CascadeClassifier(str(model_path))
@@ -30,9 +33,21 @@ class FaceLandmarks:
                 x, y, width, height = face.left(), face.top(), face.right() - face.left(), face.right() - face.left()
                 bbox.append([x, y, width, height])
             bbox = np.array(bbox)
-        return bbox
 
-    def facial_landmarks(self, img) -> dlib.points:
+        # sort bounding box according to length (area)
+        area = []
+        for box in bbox:
+            area.append(box[3])
+        area_sorted = np.argsort(area)[::-1]
+
+        if nth_biggest_face > len(bbox):
+            print('Out of range and return the biggest bounding box')
+            nth_biggest_face = 1
+
+        selected_bbox = bbox[area_sorted[nth_biggest_face - 1]]
+        return selected_bbox
+
+    def facial_landmarks(self, img) -> List[dlib.points]:
         bbox = self.bounding_box(img)
         if self.landmarks_model == LandmarksPredictorType.EnsembleRegressionTrees:
             model_path = Path('../models/shape_predictor_68_face_landmarks.dat').resolve()
