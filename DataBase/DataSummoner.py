@@ -19,7 +19,7 @@ class DataSummoner:
         # 初始化firestore
         self.image_set = 'face_images'
         self.db = firestore.client()
-        self.columns_dict = {'face_images': ['data', 'name', 'gender', 'is_processed', 'image_id']}
+        self.columns_dict = {'face_images': ['data', 'name', 'gender', 'is_processed', 'image_id', 'bounding_boxes']}
 
     def base64_to_image(self, base64_str):
         try:
@@ -111,5 +111,3 @@ class DataSummoner:
                 print('[INFO] fetch empty data')
         except Exception as e:
             print(e)
-
-
