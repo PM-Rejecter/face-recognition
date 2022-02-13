@@ -10,7 +10,7 @@ import uuid
 import os
 class DataSummoner:
     def __init__(self,cred_path:str):
-        # path/to/serviceAccoun t.json 請用自己存放的路徑
+        # path/to/serviceAccount.json 請用自己存放的路徑
         cred = credentials.Certificate(cred_path)
         # 初始 化firebase，注意不能重複初始化
         firebase_admin.initialize_app(cred)
