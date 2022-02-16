@@ -132,3 +132,4 @@ dmypy.json
 .idea/
 /exodia-face-recognition-firebase-adminsdk-1xywr-4f3dc249ba.json
 /data/
+.DS_Store
