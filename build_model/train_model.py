@@ -1,6 +1,8 @@
-import tensorflow as tf
 from pathlib import Path
 
+import tensorflow as tf
+
+from build_model.facenet import NN1
 
 # 限制 gpu 的記憶體使用量，不要一次抓死
 gpus = tf.config.experimental.list_physical_devices("GPU")
@@ -32,4 +34,9 @@ val_ds = tf.keras.utils.image_dataset_from_directory(
     image_size=(img_height, img_width),
     batch_size=batch_size
 )
+
+# import model
+model = NN1()
+
+# setting optimizer and loss function
 
