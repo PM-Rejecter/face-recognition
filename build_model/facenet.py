@@ -58,3 +58,11 @@ class NN1(Model):
         x = self.fc2(x)
         x = self.fc3(x)
         return x
+
+class NN2(model):
+    def __init__(self):
+        super(NN2, self).__init__()
+
+
+    def call(self):
+        pass
