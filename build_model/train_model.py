@@ -1,6 +1,8 @@
+from datetime import datetime
+from pathlib import Path
+
 import tensorflow as tf
 import tensorflow_addons as tfa
-from pathlib import Path
 
 from build_model.facenet import NN1
 
@@ -82,8 +84,15 @@ def test_step(images, labels):
     val_accuracy(labels, predictions)
 
 
+# set up tensor board
+current_time = datetime.now().strftime("%Y%m%d-%H%M%S")
+train_log_dir = 'logs/gradient_tape/' + current_time + '/train'
+val_log_dir = 'logs/gradient_tape/' + current_time + '/val'
+train_summary_writer = tf.summary.create_file_writer(train_log_dir)
+val_summary_writer = tf.summary.create_file_writer(val_log_dir)
+
 # training
-EPOCHS = 5
+EPOCHS = 500
 
 for epoch in range(EPOCHS):
     # Reset the metrics at the start of the next epoch
@@ -94,9 +103,15 @@ for epoch in range(EPOCHS):
 
     for images, labels in train_ds:
         train_step(images, labels)
+    with train_summary_writer.as_default():
+        tf.summary.scalar('loss', train_loss.result(), step=epoch)
+        tf.summary.scalar('accuracy', train_accuracy.result(), step=epoch)
 
     for test_images, test_labels in val_ds:
         test_step(test_images, test_labels)
+    with val_summary_writer.as_default():
+        tf.summary.scalar('loss', val_loss.result(), step=epoch)
+        tf.summary.scalar('accuracy', val_accuracy.result(), step=epoch)
 
     print(
         f'Epoch {epoch + 1}, '
