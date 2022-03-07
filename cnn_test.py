@@ -17,7 +17,7 @@ images_list = []
 images_label = []
 images_label_map = {}
 label_count = 0
-for path in glob.glob('lfw_funneled/*'):
+for path in glob.glob('image/data/*'):
     images_label_map[label_count] = Path(path).name
     for sub_path in glob.glob(path + '/*.jpg'):
         image = Image.open(sub_path).resize((220,220))
