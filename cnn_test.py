@@ -10,23 +10,23 @@ import tensorflow as tf
 import tensorflow_addons as tfa
 from sklearn.model_selection import train_test_split
 
-# ds = DataSummoner("exodia-face-recognition-firebase-adminsdk-1xywr-4f3dc249ba.json")
-#
-# ds.download_all_images("image/data", True)
-# images_list = []
-# images_label = []
-# images_label_map = {}
-# label_count = 0
-# for path in glob.glob('lfw_funneled/*'):
-#     images_label_map[label_count] = Path(path).name
-#     for sub_path in glob.glob(path + '/*.jpg'):
-#         image = Image.open(sub_path).resize((220,220))
-#         image_array = np.array(image)
-#         images_list.append(image_array)
-#         images_label.append(label_count)
-#     label_count += 1
-# images_list = np.asarray(images_list,dtype=float)
-# images_label = np.asarray(images_label,dtype=float)
+ds = DataSummoner("exodia-face-recognition-firebase-adminsdk-1xywr-4f3dc249ba.json")
+
+ds.download_all_images("image/data", True)
+images_list = []
+images_label = []
+images_label_map = {}
+label_count = 0
+for path in glob.glob('lfw_funneled/*'):
+    images_label_map[label_count] = Path(path).name
+    for sub_path in glob.glob(path + '/*.jpg'):
+        image = Image.open(sub_path).resize((220,220))
+        image_array = np.array(image)
+        images_list.append(image_array)
+        images_label.append(label_count)
+    label_count += 1
+images_list = np.asarray(images_list,dtype=float)
+images_label = np.asarray(images_label,dtype=float)
 
 train_ds = tf.keras.utils.image_dataset_from_directory(
     'lfw_funneled',
