@@ -10,23 +10,23 @@ import tensorflow as tf
 import tensorflow_addons as tfa
 from sklearn.model_selection import train_test_split
 
-ds = DataSummoner("exodia-face-recognition-firebase-adminsdk-1xywr-4f3dc249ba.json")
-
-ds.download_all_images("image/data", True)
-images_list = []
-images_label = []
-images_label_map = {}
-label_count = 0
-for path in glob.glob('image/data/*'):
-    images_label_map[label_count] = Path(path).name
-    for sub_path in glob.glob(path + '/*.jpg'):
-        image = Image.open(sub_path).resize((220,220))
-        image_array = np.array(image)
-        images_list.append(image_array)
-        images_label.append(label_count)
-    label_count += 1
-images_list = np.asarray(images_list,dtype=float)
-images_label = np.asarray(images_label,dtype=float)
+# ds = DataSummoner("exodia-face-recognition-firebase-adminsdk-1xywr-4f3dc249ba.json")
+#
+# ds.download_all_images("image/data", True)
+# images_list = []
+# images_label = []
+# images_label_map = {}
+# label_count = 0
+# for path in glob.glob('image/data/*'):
+#     images_label_map[label_count] = Path(path).name
+#     for sub_path in glob.glob(path + '/*.jpg'):
+#         image = Image.open(sub_path).resize((220,220))
+#         image_array = np.array(image)
+#         images_list.append(image_array)
+#         images_label.append(label_count)
+#     label_count += 1
+# images_list = np.asarray(images_list,dtype=float)
+# images_label = np.asarray(images_label,dtype=float)
 
 train_ds = tf.keras.utils.image_dataset_from_directory(
     'lfw_funneled',
@@ -36,8 +36,6 @@ train_ds = tf.keras.utils.image_dataset_from_directory(
     image_size=(220, 220),
     batch_size=32
 )
-
-# X_train, X_test, y_train, y_test = train_test_split(images_list, images_label, test_size=0.3, shuffle=True)
 
 
 def _normalize_img(img, label):
@@ -58,21 +56,10 @@ def train_step(images, labels):
         loss = loss_func(labels, predictions)
     gradients = tape.gradient(loss, model.trainable_variables)
     optimizer.apply_gradients(zip(gradients, model.trainable_variables))
-
     train_loss(loss)
     train_accuracy(labels, predictions)
 
 EPOCHS = 500
-batch = 32
-index = batch
-start = 0
-# new_x_train = []
-# new_y_train = []
-# while index <= len(X_train):
-#     new_x_train.append(X_train[start:index])
-#     new_y_train.append(y_train[start:index])
-#     index += batch
-#     start += batch
 
 for epoch in range(EPOCHS):
     # Reset the metrics at the start of the next epoch
