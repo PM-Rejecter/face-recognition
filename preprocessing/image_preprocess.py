@@ -3,8 +3,8 @@ from DataBase.DataSummoner import DataSummoner
 from pathlib import Path
 import cv2
 import json
-from face_landmarks import FaceLandmarks
-from image_adjuster import rotate_img
+from preprocessing.face_landmarks import FaceLandmarks
+from preprocessing.image_adjuster import rotate_img
 import numpy as np
 
 
@@ -43,3 +43,29 @@ def preprocess(image_path: str, key_path: str, output_path: str = None):
         data_info['bounding_boxes'] = {str(i): b for i, b in enumerate(bounding_boxes)}
         ds.save_data(data=data_info)
 
+
+def get_processed_image(image, is_path: bool = True):
+    if is_path:
+        img = cv2.imread(image)
+        img = cv2.resize(img, (224, 224))
+    else:
+        img = image
+    face_landmarks = FaceLandmarks()
+    land_marks = face_landmarks.alignment_points(img)
+    if len(land_marks) == 0:
+        return []
+    land_marks = land_marks[0]
+    right_eye = land_marks[1]
+    left_eye = land_marks[0]
+    center_x = (right_eye[0] + left_eye[0]) / 2
+    center_y = (right_eye[1] + left_eye[1]) / 2
+    dY = right_eye[1] - left_eye[1]
+    dX = right_eye[0] - left_eye[0]
+    angle = np.degrees(np.arctan2(dY, dX))
+    rotated_img = rotate_img(img, [center_x, center_y], angle)
+    bounding_box = face_landmarks.bounding_box(rotated_img)
+    if bounding_box == [] :
+        return []
+    crop_img = rotated_img[bounding_box[1]: bounding_box[1] + bounding_box[2],
+               bounding_box[0]:bounding_box[0] + bounding_box[3]]
+    return crop_img

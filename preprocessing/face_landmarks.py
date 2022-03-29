@@ -22,7 +22,7 @@ class FaceLandmarks:
         # nth_biggest_face=1 represents the biggest bounding box, and 2 represents the second one and so on...
 
         if self.bbox_detector == DetectorType.Cascade:
-            model_path = Path('../models/haarcascade_frontalface_default.xml').resolve()
+            model_path = Path('/Users/tongyuhao/Desktop/project/face-recognition/models/haarcascade_frontalface_default.xml').resolve()
             detector = cv2.CascadeClassifier(str(model_path))
             bbox = detector.detectMultiScale(img)
         elif self.bbox_detector == DetectorType.HOG_LinearSVM:
@@ -43,26 +43,28 @@ class FaceLandmarks:
         if nth_biggest_face > len(bbox):
             print('Out of range and return the biggest bounding box')
             nth_biggest_face = 1
+            return []
 
         selected_bbox = bbox[area_sorted[nth_biggest_face - 1]]
         return selected_bbox
 
     def facial_landmarks(self, img) -> List[dlib.points]:
         bbox = self.bounding_box(img)
-        if self.landmarks_model == LandmarksPredictorType.EnsembleRegressionTrees:
-            model_path = Path('../models/shape_predictor_68_face_landmarks.dat').resolve()
+        landmarks = []
+        if bbox != [] and self.landmarks_model == LandmarksPredictorType.EnsembleRegressionTrees:
+            model_path = Path('/Users/tongyuhao/Desktop/project/face-recognition/models/shape_predictor_68_face_landmarks.dat').resolve()
             predictor = dlib.shape_predictor(str(model_path))
             landmarks = []
-            for face in bbox:
-                x1, y1, width, height = face
-                x2, y2 = x1 + width, y1 + height
-                left = x1
-                right = x2
-                top = y1
-                bottom = y2
-                dlib_rect = dlib.rectangle(left, top, right, bottom)
-                points = predictor(img, dlib_rect).parts()
-                landmarks.append(points)
+            # for face in bbox:
+            x1, y1, width, height = bbox
+            x2, y2 = x1 + width, y1 + height
+            left = x1
+            right = x2
+            top = y1
+            bottom = y2
+            dlib_rect = dlib.rectangle(left, top, right, bottom)
+            points = predictor(img, dlib_rect).parts()
+            landmarks.append(points)
         return landmarks
 
     def alignment_points(self, img) -> np.array:
